@@ -168,7 +168,7 @@ vim.opt.scrolloff = 3
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 vim.keymap.set('n', '<leader>q', '<cmd>bd<CR>')
-vim.keymap.set('n', '<leader>o', '<cmd>Oil<CR>')
+vim.keymap.set('n', '<leader>e', '<cmd>Oil<CR>')
 vim.keymap.set('n', '<leader>t', '<cmd>TagbarToggle<CR>')
 
 -- Diagnostic keymaps
