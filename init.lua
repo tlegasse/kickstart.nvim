@@ -171,6 +171,11 @@ vim.keymap.set('n', '<leader>q', '<cmd>bd<CR>')
 vim.keymap.set('n', '<leader>e', '<cmd>Oil<CR>')
 vim.keymap.set('n', '<leader>t', '<cmd>TagbarToggle<CR>')
 
+vim.keymap.set('n', '<leader>de', vim.diagnostic.setloclist)
+vim.keymap.set('n', '<leader>dp', vim.diagnostic.goto_prev)
+vim.keymap.set('n', '<leader>dn', vim.diagnostic.goto_next)
+vim.keymap.set('n', '<leader>dd', vim.diagnostic.open_float)
+
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>d', vim.diagnostic.setloclist, { desc = 'Open [D]iagnostic quickfix list' })
 
@@ -223,16 +228,15 @@ require('lazy').setup({
   {
     'tpope/vim-fugitive', -- Detect tabstop and shiftwidth automatically
     config = function()
-      vim.keymap.set("n", "<leader>ga", ":G add .<CR>")
-      vim.keymap.set("n", "<leader>gs", vim.cmd.Git)
-      vim.keymap.set("n", "<leader>gc", ":G commit -m '")
-      vim.keymap.set("n", "<leader>go", ":GBrowse<CR>")
-      vim.keymap.set("n", "<leader>gb", ":G checkout ")
-      vim.keymap.set("n", "<leader>gu", ":G push<CR>")
-      vim.keymap.set("n", "<leader>gd", ":G pull --rebase<CR>")
-    end
+      vim.keymap.set('n', '<leader>ga', ':G add .<CR>')
+      vim.keymap.set('n', '<leader>gs', vim.cmd.Git)
+      vim.keymap.set('n', '<leader>gc', ":G commit -m '")
+      vim.keymap.set('n', '<leader>go', ':GBrowse<CR>')
+      vim.keymap.set('n', '<leader>gb', ':G checkout ')
+      vim.keymap.set('n', '<leader>gu', ':G push<CR>')
+      vim.keymap.set('n', '<leader>gd', ':G pull --rebase<CR>')
+    end,
   },
-
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -395,7 +399,7 @@ require('lazy').setup({
       default_file_explorer = true,
     },
     -- Optional dependencies
-    dependencies = { { "echasnovski/mini.icons", opts = {} } },
+    dependencies = { { 'echasnovski/mini.icons', opts = {} } },
     -- dependencies = { "nvim-tree/nvim-web-devicons" }, -- use if prefer nvim-web-devicons
   },
   {
@@ -409,7 +413,7 @@ require('lazy').setup({
 
       -- Useful status updates for LSP.
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      { 'j-hui/fidget.nvim', opts = {} },
+      -- { 'j-hui/fidget.nvim', opts = {} },
 
       -- Allows extra capabilities provided by nvim-cmp
       'hrsh7th/cmp-nvim-lsp',
@@ -798,17 +802,19 @@ require('lazy').setup({
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,
       --  and try some other statusline plugin
-      local statusline = require 'mini.statusline'
+      -- local statusline = require 'mini.statusline'
       -- set use_icons to true if you have a Nerd Font
-      statusline.setup { use_icons = vim.g.have_nerd_font }
+      -- statusline.setup { use_icons = vim.g.have_nerd_font }
+
+      require('mini.comment').setup()
 
       -- You can configure sections in the statusline by overriding their
       -- default behavior. For example, here we set the section for
       -- cursor location to LINE:COLUMN
       ---@diagnostic disable-next-line: duplicate-set-field
-      statusline.section_location = function()
-        return '%2l:%-2v'
-      end
+      -- statusline.section_location = function()
+      --   return '%2l:%-2v'
+      -- end
 
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
@@ -868,45 +874,50 @@ require('lazy').setup({
   -- you can continue same window with `<space>sr` which resumes last telescope search
 
   {
-    'majutsushi/tagbar'
+    'majutsushi/tagbar',
   },
-
 
   {
     'kylechui/nvim-surround',
-    version = "*", -- Use for stability; omit to use `main` branch for the latest features
-    event = "VeryLazy",
+    version = '*', -- Use for stability; omit to use `main` branch for the latest features
+    event = 'VeryLazy',
     config = function()
-      require("nvim-surround").setup({
+      require('nvim-surround').setup {
         keymaps = {
-          insert = "<C-g>s",
-          insert_line = "<C-g>S",
-          normal_cur = "<leader>ss",
-          normal_cur_line = "<leader>SS",
-          visual = "<leader>s",
-          visual_line = "<leader>S",
-          delete = "ds",
-          change = "cs",
-          change_line = "cS",
-        }
+          insert = '<C-g>s',
+          insert_line = '<C-g>S',
+          normal_cur = '<leader>ss',
+          normal_cur_line = '<leader>SS',
+          visual = '<leader>s',
+          visual_line = '<leader>S',
+          delete = 'ds',
+          change = 'cs',
+          change_line = 'cS',
+        },
         -- Configuration here, or leave empty to use defaults
-      })
-    end
+      }
+    end,
   },
   {
     'm4xshen/autoclose.nvim',
     config = function()
-      require("autoclose").setup()
-    end
+      require('autoclose').setup()
+    end,
   },
   {
-    "Mofiqul/dracula.nvim",
+    'Mofiqul/dracula.nvim',
     config = function()
-      require("dracula").setup({
-        transparent_bg = true
-      })
-    end
-  }
+      require('dracula').setup {
+        transparent_bg = true,
+      }
+    end,
+  },
+  {
+    'ggandor/leap.nvim',
+    config = function()
+      require('leap').create_default_mappings()
+    end,
+  },
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
@@ -931,4 +942,4 @@ require('lazy').setup({
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
-vim.cmd[[colorscheme dracula]]
+vim.cmd [[colorscheme dracula]]
