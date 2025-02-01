@@ -656,6 +656,11 @@ require('lazy').setup({
     build = ':TSUpdate',
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
+    setup = function()
+      require('nvim-treesitter.configs').setup({
+        ignore_install = { 'org' }
+      })
+    end,
     opts = {
       ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
       -- Autoinstall languages that are not installed
@@ -707,7 +712,6 @@ require('lazy').setup({
   {
     'majutsushi/tagbar',
   },
-
   {
     'kylechui/nvim-surround',
     version = '*', -- Use for stability; omit to use `main` branch for the latest features
@@ -730,12 +734,7 @@ require('lazy').setup({
     end,
   },
   {
-    'Mofiqul/dracula.nvim',
-    config = function()
-      require('dracula').setup {
-        transparent_bg = true,
-      }
-    end,
+    'morhetz/gruvbox'
   },
   {
     'ggandor/leap.nvim',
@@ -744,17 +743,17 @@ require('lazy').setup({
     end,
   },
   {
-    'vimwiki/vimwiki',
-    init = function()
-      vim.g.vimwiki_list = {
-        {
-          path = '~/vimwiki/',
-          syntax = 'markdown',
-          ext = '.md',
-        },
-      }
+    'nvim-orgmode/orgmode',
+    event = 'VeryLazy',
+    ft = { 'org' },
+    config = function()
+      -- Setup orgmode
+      require('orgmode').setup({
+        org_agenda_files = '~/orgfiles/**/*',
+        org_default_notes_file = '~/orgfiles/refile.org',
+      })
     end,
-  },
+  }
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
@@ -791,4 +790,6 @@ vim.api.nvim_create_autocmd('FileType', {
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
-vim.cmd [[colorscheme dracula]]
+vim.cmd [[set termguicolors]]
+vim.cmd [[colorscheme gruvbox]]
+vim.cmd [[set background=light]]
