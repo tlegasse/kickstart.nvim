@@ -734,9 +734,6 @@ require('lazy').setup({
     end,
   },
   {
-    'morhetz/gruvbox'
-  },
-  {
     'ggandor/leap.nvim',
     config = function()
       require('leap').create_default_mappings()
@@ -752,6 +749,14 @@ require('lazy').setup({
         org_agenda_files = '~/orgfiles/**/*',
         org_default_notes_file = '~/orgfiles/refile.org',
       })
+    end,
+  },
+  {
+    'Mofiqul/dracula.nvim',
+    config = function()
+      require('dracula').setup {
+        transparent_bg = true,
+      }
     end,
   }
 }, {
@@ -790,6 +795,4 @@ vim.api.nvim_create_autocmd('FileType', {
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
-vim.cmd [[set termguicolors]]
-vim.cmd [[colorscheme gruvbox]]
-vim.cmd [[set background=light]]
+vim.cmd [[colorscheme dracula]]
