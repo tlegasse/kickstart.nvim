@@ -608,9 +608,9 @@ require('lazy').setup({
         sources = {
           { name = 'lazydev', group_index = 0 },
           { name = 'luasnip' },
-          { name = 'nvim_lsp' },
           { name = 'buffer' },
           { name = 'path' },
+          { name = 'orgmode' },
         },
       }
     end,
@@ -740,18 +740,6 @@ require('lazy').setup({
     end,
   },
   {
-    'nvim-orgmode/orgmode',
-    event = 'VeryLazy',
-    ft = { 'org' },
-    config = function()
-      -- Setup orgmode
-      require('orgmode').setup({
-        org_agenda_files = '~/orgfiles/**/*',
-        org_default_notes_file = '~/orgfiles/refile.org',
-      })
-    end,
-  },
-  {
     'Mofiqul/dracula.nvim',
     config = function()
       require('dracula').setup {
@@ -763,6 +751,28 @@ require('lazy').setup({
     'nvim-orgmode/org-bullets.nvim',
     config = function()
       require('org-bullets').setup()
+    end
+  },
+  {
+    "chipsenkbeil/org-roam.nvim",
+    tag = "0.1.1",
+    dependencies = {
+      {
+        "nvim-orgmode/orgmode",
+        tag = "0.3.7",
+        ft = { 'org' },
+        config = function()
+          require('orgmode').setup({
+            org_agenda_files = '~/orgfiles/**/*',
+            org_default_notes_file = '~/orgfiles/refile.org',
+          })
+        end,
+      },
+    },
+    config = function()
+      require("org-roam").setup({
+        directory = "~/orgfiles",
+      })
     end
   }
 }, {
