@@ -36,9 +36,9 @@ local snippets = {
     -- Heading properties
     s("properties", fmt(
         [[
-#+PROPERTIES:
-#+ID: {}
-#+END:
+:PROPERTIES:
+:ID:       {}
+:END:
         ]], {
             i(1, "id"),
         }
