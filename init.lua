@@ -543,7 +543,9 @@ require('lazy').setup({
       -- See `:help cmp`
       local cmp = require 'cmp'
       local luasnip = require 'luasnip'
-      luasnip.config.setup {}
+      luasnip.config.setup {
+        require("luasnip.loaders.from_lua").load({paths = "~/.config/nvim/lua/snippets/"})
+      }
 
       cmp.setup {
         snippet = {
@@ -754,21 +756,41 @@ require('lazy').setup({
     end
   },
   {
+    'nvim-orgmode/orgmode',
+    event = 'VeryLazy',
+    config = function()
+      require('orgmode').setup({
+        org_agenda_files = '~/orgfiles/**/*',
+        org_default_notes_file = '~/orgfiles/refile.org',
+        org_capture_templates = {
+          r = {
+              description = "Repo",
+              template = "* [[%x][%(return string.match('%x', '([^/]+)$'))]]%?",
+              target = "~/org/repos.org",
+          },
+          e =  'Event',
+          er = {
+            description = 'recurring',
+            template = '** %?\n %T',
+            target = '~/org/calendar.org',
+            headline = 'recurring'
+          },
+          eo = {
+            description = 'one-time',
+            template = '** %?\n %T',
+            target = '~/org/calendar.org',
+            headline = 'one-time'
+          }
+
+        }
+      })
+
+      vim.keymap.set('n', '<leader>oo', '<cmd>e ~/orgfiles/__index.org<CR>')
+    end,
+  },
+  {
     "chipsenkbeil/org-roam.nvim",
     tag = "0.1.1",
-    dependencies = {
-      {
-        "nvim-orgmode/orgmode",
-        tag = "0.3.7",
-        ft = { 'org' },
-        config = function()
-          require('orgmode').setup({
-            org_agenda_files = '~/orgfiles/**/*',
-            org_default_notes_file = '~/orgfiles/refile.org',
-          })
-        end,
-      },
-    },
     config = function()
       require("org-roam").setup({
         directory = "~/orgfiles",
