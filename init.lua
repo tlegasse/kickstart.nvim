@@ -256,7 +256,7 @@ vim.opt.rtp:prepend(lazypath)
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
-  'tpope/vim-sleuth',     -- Detect tabstop and shiftwidth automatically
+  'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
   {
     'tpope/vim-fugitive', -- Detect tabstop and shiftwidth automatically
     config = function()
@@ -326,7 +326,7 @@ require('lazy').setup({
       { 'nvim-telescope/telescope-ui-select.nvim' },
 
       -- Useful for getting pretty icons, but requires a Nerd Font.
-      { 'nvim-tree/nvim-web-devicons',            enabled = vim.g.have_nerd_font },
+      { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
     },
     config = function()
       -- Telescope is a fuzzy finder that comes with a lot of different things that
@@ -422,7 +422,7 @@ require('lazy').setup({
       },
     },
   },
-  { 'Bilal2453/luvit-meta',     lazy = true },
+  { 'Bilal2453/luvit-meta', lazy = true },
   {
     'stevearc/oil.nvim',
     ---@module 'oil'
@@ -455,15 +455,15 @@ require('lazy').setup({
     dependencies = {
       -- LSP Support
       -- Autocompletion
-      { 'hrsh7th/nvim-cmp' },         -- Required
-      { 'hrsh7th/cmp-nvim-lsp' },     -- Required
-      { 'hrsh7th/cmp-buffer' },       -- Optional
-      { 'hrsh7th/cmp-path' },         -- Optional
+      { 'hrsh7th/nvim-cmp' }, -- Required
+      { 'hrsh7th/cmp-nvim-lsp' }, -- Required
+      { 'hrsh7th/cmp-buffer' }, -- Optional
+      { 'hrsh7th/cmp-path' }, -- Optional
       { 'saadparwaiz1/cmp_luasnip' }, -- Optional
-      { 'hrsh7th/cmp-nvim-lua' },     -- Optional
+      { 'hrsh7th/cmp-nvim-lua' }, -- Optional
 
       -- Snippets
-      { 'L3MON4D3/LuaSnip' },             -- Required
+      { 'L3MON4D3/LuaSnip' }, -- Required
       { 'rafamadriz/friendly-snippets' }, -- Optional
     },
   },
@@ -544,7 +544,7 @@ require('lazy').setup({
       local cmp = require 'cmp'
       local luasnip = require 'luasnip'
       luasnip.config.setup {
-        require("luasnip.loaders.from_lua").load({paths = "~/.config/nvim/lua/snippets/"})
+        require('luasnip.loaders.from_lua').load { paths = '~/.config/nvim/lua/snippets/' },
       }
 
       cmp.setup {
@@ -659,9 +659,9 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     setup = function()
-      require('nvim-treesitter.configs').setup({
-        ignore_install = { 'org' }
-      })
+      require('nvim-treesitter.configs').setup {
+        ignore_install = { 'org' },
+      }
     end,
     opts = {
       ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
@@ -753,50 +753,51 @@ require('lazy').setup({
     'nvim-orgmode/org-bullets.nvim',
     config = function()
       require('org-bullets').setup()
-    end
+    end,
   },
   {
     'nvim-orgmode/orgmode',
     event = 'VeryLazy',
     config = function()
-      require('orgmode').setup({
+      require('orgmode').setup {
         org_agenda_files = '~/orgfiles/**/*',
+        org_startup_folded = 'showeverything',
         org_default_notes_file = '~/orgfiles/refile.org',
+        org_hide_emphasis_markers = true,
         org_capture_templates = {
           r = {
-              description = "Repo",
-              template = "* [[%x][%(return string.match('%x', '([^/]+)$'))]]%?",
-              target = "~/org/repos.org",
+            description = 'Repo',
+            template = "* [[%x][%(return string.match('%x', '([^/]+)$'))]]%?",
+            target = '~/org/repos.org',
           },
-          e =  'Event',
+          e = 'Event',
           er = {
             description = 'recurring',
             template = '** %?\n %T',
             target = '~/org/calendar.org',
-            headline = 'recurring'
+            headline = 'recurring',
           },
           eo = {
             description = 'one-time',
             template = '** %?\n %T',
             target = '~/org/calendar.org',
-            headline = 'one-time'
-          }
-
-        }
-      })
+            headline = 'one-time',
+          },
+        },
+      }
 
       vim.keymap.set('n', '<leader>oo', '<cmd>e ~/orgfiles/__index.org<CR>')
     end,
   },
   {
-    "chipsenkbeil/org-roam.nvim",
-    tag = "0.1.1",
+    'chipsenkbeil/org-roam.nvim',
+    tag = '0.1.1',
     config = function()
-      require("org-roam").setup({
-        directory = "~/orgfiles",
-      })
-    end
-  }
+      require('org-roam').setup {
+        directory = '~/orgfiles',
+      }
+    end,
+  },
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
@@ -825,12 +826,13 @@ vim.api.nvim_create_autocmd('FileType', {
   pattern = 'liquid',
   callback = function()
     vim.opt_local.expandtab = true -- Use spaces
-    vim.opt_local.shiftwidth = 2   -- Number of spaces for indentation
-    vim.opt_local.tabstop = 2      -- Width of tab character
-    vim.opt_local.softtabstop = 2  -- Number of spaces for a tab
+    vim.opt_local.shiftwidth = 2 -- Number of spaces for indentation
+    vim.opt_local.tabstop = 2 -- Width of tab character
+    vim.opt_local.softtabstop = 2 -- Number of spaces for a tab
   end,
 })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
 vim.cmd [[colorscheme dracula]]
+vim.cmd [[set conceallevel=3]]
