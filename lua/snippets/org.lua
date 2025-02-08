@@ -158,6 +158,15 @@ DEADLINE: <{}>
             i(3, "evening reflection")
         }
     )),
+    s("tbl", fmt(
+        [[
+| {}
+|-
+|
+        ]], {
+            i(1, "heading"),
+        }
+    )),
 }
 
 -- Register the snippets

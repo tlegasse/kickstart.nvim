@@ -765,23 +765,23 @@ require('lazy').setup({
         org_default_notes_file = '~/orgfiles/refile.org',
         org_hide_emphasis_markers = true,
         org_capture_templates = {
-          r = {
-            description = 'Repo',
-            template = "* [[%x][%(return string.match('%x', '([^/]+)$'))]]%?",
-            target = '~/org/repos.org',
+          m = 'Meeting',
+          mr = {
+            description = 'Recurring',
+            template = '* Meeting: %?\n:PROPERTIES:\n:Date: %t\n:Participants: \n:END:\n\n** Agenda\n\n\n** Notes\n\n\n** Action Items\n- [ ] \n',
+            target = '~/orgfiles/meetings.org',
+            headline = 'Recurring',
           },
-          e = 'Event',
-          er = {
-            description = 'recurring',
-            template = '** %?\n %T',
-            target = '~/org/calendar.org',
-            headline = 'recurring',
+          mo = {
+            description = 'One time',
+            template = '* Meeting: %?\n:PROPERTIES:\n:Date: %t\n:Participants: \n:END:\n\n** Agenda\n\n\n** Notes\n\n\n** Action Items\n- [ ] \n',
+            target = '~/orgfiles/meetings.org',
+            headline = 'One Time',
           },
-          eo = {
-            description = 'one-time',
-            template = '** %?\n %T',
-            target = '~/org/calendar.org',
-            headline = 'one-time',
+          f = {
+            description = 'Fleeting note',
+            template = '\n* %? :inbox:\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n',
+            target = '~/orgfiles/inbox.org'
           },
         },
       }
@@ -797,7 +797,7 @@ require('lazy').setup({
         directory = '~/orgfiles',
       }
     end,
-  },
+  }
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
