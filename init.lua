@@ -761,7 +761,7 @@ require('lazy').setup({
     config = function()
       require('orgmode').setup {
         org_agenda_files = '~/orgfiles/**/*',
-        org_startup_folded = 'showeverything',
+        org_startup_folded = 'content',
         org_default_notes_file = '~/orgfiles/refile.org',
         org_hide_emphasis_markers = true,
         org_capture_templates = {
