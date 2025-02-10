@@ -768,13 +768,13 @@ require('lazy').setup({
           m = 'Meeting',
           mr = {
             description = 'Recurring',
-            template = '* Meeting: %?\n:PROPERTIES:\n:Date: %t\n:Participants: \n:END:\n\n** Agenda\n\n\n** Notes\n\n\n** Action Items\n- [ ] \n',
+            template = '** Meeting: %t %?\n:PROPERTIES:\n:Date: %t\n:Participants: \n:END:\n\n*** Agenda\n\n\n*** Notes\n\n\n*** Action Items\n- [ ] \n',
             target = '~/orgfiles/meetings.org',
             headline = 'Recurring',
           },
           mo = {
             description = 'One time',
-            template = '* Meeting: %?\n:PROPERTIES:\n:Date: %t\n:Participants: \n:END:\n\n** Agenda\n\n\n** Notes\n\n\n** Action Items\n- [ ] \n',
+            template = '** Meeting: %t %?\n:PROPERTIES:\n:Date: %t\n:Participants: \n:END:\n\n*** Agenda\n\n\n*** Notes\n\n\n*** Action Items\n- [ ] \n',
             target = '~/orgfiles/meetings.org',
             headline = 'One Time',
           },
