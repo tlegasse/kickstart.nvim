@@ -762,7 +762,7 @@ require('lazy').setup({
       require('orgmode').setup {
         org_agenda_files = '~/orgfiles/**/*',
         org_startup_folded = 'content',
-        org_default_notes_file = '~/orgfiles/refile.org',
+        org_default_notes_file = '~/orgfiles/inbox.org',
         org_hide_emphasis_markers = true,
         org_capture_templates = {
           m = 'Meeting',
@@ -797,6 +797,28 @@ require('lazy').setup({
         directory = '~/orgfiles',
       }
     end,
+  },
+  {
+    "hat0uma/csvview.nvim",
+    ---@module "csvview"
+    ---@type CsvView.Options
+    opts = {
+      parser = { comments = { "#", "//" } },
+      keymaps = {
+        -- Text objects for selecting fields
+        textobject_field_inner = { "if", mode = { "o", "x" } },
+        textobject_field_outer = { "af", mode = { "o", "x" } },
+        -- Excel-like navigation:
+        -- Use <Tab> and <S-Tab> to move horizontally between fields.
+        -- Use <Enter> and <S-Enter> to move vertically between rows and place the cursor at the end of the field.
+        -- Note: In terminals, you may need to enable CSI-u mode to use <S-Tab> and <S-Enter>.
+        jump_next_field_end = { "<Tab>", mode = { "n", "v" } },
+        jump_prev_field_end = { "<S-Tab>", mode = { "n", "v" } },
+        jump_next_row = { "<Enter>", mode = { "n", "v" } },
+        jump_prev_row = { "<S-Enter>", mode = { "n", "v" } },
+      },
+    },
+    cmd = { "CsvViewEnable", "CsvViewDisable", "CsvViewToggle" },
   }
 }, {
   ui = {
@@ -836,3 +858,5 @@ vim.api.nvim_create_autocmd('FileType', {
 -- vim: ts=2 sts=2 sw=2 et
 vim.cmd [[colorscheme dracula]]
 vim.cmd [[set conceallevel=3]]
+
+vim.keymap.set('n', '<leader>c', '<cmd>CsvViewToggle<CR>')
