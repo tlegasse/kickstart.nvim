@@ -765,6 +765,34 @@ require('lazy').setup({
         org_default_notes_file = '~/orgfiles/inbox.org',
         org_hide_emphasis_markers = true,
         org_capture_templates = {
+          l = {
+            description = 'Literature Note',
+            template = [[* %^{Title}
+:PROPERTIES:
+:ID:       %(random-hex)
+:CREATED:  %U
+:SOURCE:   %^{Source|Article|Book|Paper|Video|Podcast}
+:AUTHOR:   %^{Author}
+:URL:      %^{URL}
+:END:
+
+** Summary
+%?
+
+** Key Points
+- 
+
+** Quotes
+- 
+
+** Questions/Thoughts
+- 
+
+** Permanent Note Candidates
+- [ ] 
+]],
+            target = '~/orgfiles/literature/%<%Y%m%d>-${slug}.org',
+          },
           m = 'Meeting',
           mr = {
             description = 'Recurring',
@@ -777,6 +805,13 @@ require('lazy').setup({
             template = '** Meeting: %t %?\n:PROPERTIES:\n:Date: %t\n:Participants: \n:END:\n\n*** Agenda\n\n\n*** Notes\n\n\n*** Action Items\n- [ ] \n',
             target = '~/orgfiles/meetings.org',
             headline = 'One Time',
+          },
+          t = 'Task',
+          th = {
+            description = 'Healthcare',
+            template = '** TODO %^{Task description}\nDEADLINE: %^{Deadline Date}t',
+            target = '~/orgfiles/healthcare-moc.org',
+            headline = 'TODOS',
           },
           f = {
             description = 'Fleeting note',
