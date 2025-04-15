@@ -256,7 +256,7 @@ vim.opt.rtp:prepend(lazypath)
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
-  'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+  'tpope/vim-sleuth',     -- Detect tabstop and shiftwidth automatically
   {
     'tpope/vim-fugitive', -- Detect tabstop and shiftwidth automatically
     config = function()
@@ -326,7 +326,7 @@ require('lazy').setup({
       { 'nvim-telescope/telescope-ui-select.nvim' },
 
       -- Useful for getting pretty icons, but requires a Nerd Font.
-      { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
+      { 'nvim-tree/nvim-web-devicons',            enabled = vim.g.have_nerd_font },
     },
     config = function()
       -- Telescope is a fuzzy finder that comes with a lot of different things that
@@ -422,7 +422,7 @@ require('lazy').setup({
       },
     },
   },
-  { 'Bilal2453/luvit-meta', lazy = true },
+  { 'Bilal2453/luvit-meta',     lazy = true },
   {
     'stevearc/oil.nvim',
     ---@module 'oil'
@@ -455,15 +455,15 @@ require('lazy').setup({
     dependencies = {
       -- LSP Support
       -- Autocompletion
-      { 'hrsh7th/nvim-cmp' }, -- Required
-      { 'hrsh7th/cmp-nvim-lsp' }, -- Required
-      { 'hrsh7th/cmp-buffer' }, -- Optional
-      { 'hrsh7th/cmp-path' }, -- Optional
+      { 'hrsh7th/nvim-cmp' },         -- Required
+      { 'hrsh7th/cmp-nvim-lsp' },     -- Required
+      { 'hrsh7th/cmp-buffer' },       -- Optional
+      { 'hrsh7th/cmp-path' },         -- Optional
       { 'saadparwaiz1/cmp_luasnip' }, -- Optional
-      { 'hrsh7th/cmp-nvim-lua' }, -- Optional
+      { 'hrsh7th/cmp-nvim-lua' },     -- Optional
 
       -- Snippets
-      { 'L3MON4D3/LuaSnip' }, -- Required
+      { 'L3MON4D3/LuaSnip' },             -- Required
       { 'rafamadriz/friendly-snippets' }, -- Optional
     },
   },
@@ -818,6 +818,17 @@ require('lazy').setup({
             template = '\n* %? :inbox:\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n',
             target = '~/orgfiles/inbox.org'
           },
+          l = {
+            description = 'LeetCode Problem',
+            template = '* TODO [[%^{Problem URL}][%^{Problem Title}]]\n:PROPERTIES:\n:Difficulty: %^{Difficulty|Easy|Medium|Hard}\n:Pattern: %^{Pattern}\n:Priority: %^{Priority|High|Medium|Low}\n:END:\n%?',
+            target = '~/orgfiles/leet-code.org',
+          },
+          L = {
+            description = 'New LeetCode Problem',
+            template = '~/.config/nvim/templates/leetcode-problems.org',
+            target = '~/org/leetcode/%<%Y%m%d>-${slug}.org',
+            type = 'file',
+          },
         },
       }
 
@@ -883,9 +894,9 @@ vim.api.nvim_create_autocmd('FileType', {
   pattern = 'liquid',
   callback = function()
     vim.opt_local.expandtab = true -- Use spaces
-    vim.opt_local.shiftwidth = 2 -- Number of spaces for indentation
-    vim.opt_local.tabstop = 2 -- Width of tab character
-    vim.opt_local.softtabstop = 2 -- Number of spaces for a tab
+    vim.opt_local.shiftwidth = 2   -- Number of spaces for indentation
+    vim.opt_local.tabstop = 2      -- Width of tab character
+    vim.opt_local.softtabstop = 2  -- Number of spaces for a tab
   end,
 })
 
