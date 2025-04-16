@@ -206,6 +206,13 @@ function Toggle_wrap()
   vim.wo.linebreak = not linebreak
 end
 
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'org',
+  callback = function()
+    vim.opt_local.wrap = true
+  end,
+})
+
 -- Map <leader>sw to the toggle_wrap function
 vim.api.nvim_set_keymap('n', '<leader>tw', '<cmd>lua Toggle_wrap()<CR>', { noremap = true, silent = true })
 
