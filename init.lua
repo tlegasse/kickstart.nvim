@@ -100,7 +100,11 @@ vim.g.have_nerd_font = true
 -- NOTE: You can change these options as you wish!
 --  For more options, you can see `:help option-list`
 
-vim.opt.tabstop = 4
+vim.opt.expandtab = true -- Use spaces instead of tabs
+vim.opt.shiftwidth = 4 -- Number of spaces for each indentation
+vim.opt.tabstop = 4 -- Number of spaces a tab counts for
+vim.opt.softtabstop = 4 -- Number of spaces a tab counts for when editing
+vim.opt.smartindent = true -- Do smart autoindenting when starting a new line
 
 -- Make line numbers default
 vim.opt.number = true
@@ -196,7 +200,8 @@ vim.keymap.set('v', '<', '<gv')
 vim.keymap.set('n', '>', '>>')
 vim.keymap.set('n', '<', '<<')
 
-vim.keymap.set('n', '<leader>w', ":w<cr>")
+vim.keymap.set('n', '<leader>w', ':w<cr>')
+vim.opt.wrap = false
 
 -- Define a function to toggle line wrap with word break
 function Toggle_wrap()
@@ -264,7 +269,7 @@ vim.opt.rtp:prepend(lazypath)
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
-  'tpope/vim-sleuth',     -- Detect tabstop and shiftwidth automatically
+  'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
   {
     'tpope/vim-fugitive', -- Detect tabstop and shiftwidth automatically
     config = function()
@@ -334,7 +339,7 @@ require('lazy').setup({
       { 'nvim-telescope/telescope-ui-select.nvim' },
 
       -- Useful for getting pretty icons, but requires a Nerd Font.
-      { 'nvim-tree/nvim-web-devicons',            enabled = vim.g.have_nerd_font },
+      { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
     },
     config = function()
       -- Telescope is a fuzzy finder that comes with a lot of different things that
@@ -430,7 +435,7 @@ require('lazy').setup({
       },
     },
   },
-  { 'Bilal2453/luvit-meta',     lazy = true },
+  { 'Bilal2453/luvit-meta', lazy = true },
   {
     'stevearc/oil.nvim',
     ---@module 'oil'
@@ -463,15 +468,15 @@ require('lazy').setup({
     dependencies = {
       -- LSP Support
       -- Autocompletion
-      { 'hrsh7th/nvim-cmp' },         -- Required
-      { 'hrsh7th/cmp-nvim-lsp' },     -- Required
-      { 'hrsh7th/cmp-buffer' },       -- Optional
-      { 'hrsh7th/cmp-path' },         -- Optional
+      { 'hrsh7th/nvim-cmp' }, -- Required
+      { 'hrsh7th/cmp-nvim-lsp' }, -- Required
+      { 'hrsh7th/cmp-buffer' }, -- Optional
+      { 'hrsh7th/cmp-path' }, -- Optional
       { 'saadparwaiz1/cmp_luasnip' }, -- Optional
-      { 'hrsh7th/cmp-nvim-lua' },     -- Optional
+      { 'hrsh7th/cmp-nvim-lua' }, -- Optional
 
       -- Snippets
-      { 'L3MON4D3/LuaSnip' },             -- Required
+      { 'L3MON4D3/LuaSnip' }, -- Required
       { 'rafamadriz/friendly-snippets' }, -- Optional
     },
   },
@@ -821,10 +826,16 @@ require('lazy').setup({
             target = '~/orgfiles/healthcare-moc.org',
             headline = 'TODOS',
           },
+          tg = {
+            description = 'General',
+            template = '** TODO %^{Task description}\nDEADLINE: %^{Deadline Date}t',
+            target = '~/orgfiles/inbox.org',
+            headline = 'TODOS',
+          },
           f = {
             description = 'Fleeting note',
             template = '\n* %? :inbox:\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n',
-            target = '~/orgfiles/inbox.org'
+            target = '~/orgfiles/inbox.org',
           },
           l = {
             description = 'LeetCode Problem',
@@ -853,27 +864,27 @@ require('lazy').setup({
     end,
   },
   {
-    "hat0uma/csvview.nvim",
+    'hat0uma/csvview.nvim',
     ---@module "csvview"
     ---@type CsvView.Options
     opts = {
-      parser = { comments = { "#", "//" } },
+      parser = { comments = { '#', '//' } },
       keymaps = {
         -- Text objects for selecting fields
-        textobject_field_inner = { "if", mode = { "o", "x" } },
-        textobject_field_outer = { "af", mode = { "o", "x" } },
+        textobject_field_inner = { 'if', mode = { 'o', 'x' } },
+        textobject_field_outer = { 'af', mode = { 'o', 'x' } },
         -- Excel-like navigation:
         -- Use <Tab> and <S-Tab> to move horizontally between fields.
         -- Use <Enter> and <S-Enter> to move vertically between rows and place the cursor at the end of the field.
         -- Note: In terminals, you may need to enable CSI-u mode to use <S-Tab> and <S-Enter>.
-        jump_next_field_end = { "<Tab>", mode = { "n", "v" } },
-        jump_prev_field_end = { "<S-Tab>", mode = { "n", "v" } },
-        jump_next_row = { "<Enter>", mode = { "n", "v" } },
-        jump_prev_row = { "<S-Enter>", mode = { "n", "v" } },
+        jump_next_field_end = { '<Tab>', mode = { 'n', 'v' } },
+        jump_prev_field_end = { '<S-Tab>', mode = { 'n', 'v' } },
+        jump_next_row = { '<Enter>', mode = { 'n', 'v' } },
+        jump_prev_row = { '<S-Enter>', mode = { 'n', 'v' } },
       },
     },
-    cmd = { "CsvViewEnable", "CsvViewDisable", "CsvViewToggle" },
-  }
+    cmd = { 'CsvViewEnable', 'CsvViewDisable', 'CsvViewToggle' },
+  },
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
@@ -902,9 +913,9 @@ vim.api.nvim_create_autocmd('FileType', {
   pattern = 'liquid',
   callback = function()
     vim.opt_local.expandtab = true -- Use spaces
-    vim.opt_local.shiftwidth = 2   -- Number of spaces for indentation
-    vim.opt_local.tabstop = 2      -- Width of tab character
-    vim.opt_local.softtabstop = 2  -- Number of spaces for a tab
+    vim.opt_local.shiftwidth = 2 -- Number of spaces for indentation
+    vim.opt_local.tabstop = 2 -- Width of tab character
+    vim.opt_local.softtabstop = 2 -- Number of spaces for a tab
   end,
 })
 
