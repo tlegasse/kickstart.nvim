@@ -178,14 +178,13 @@ vim.keymap.set('n', '<leader>dp', vim.diagnostic.goto_prev)
 vim.keymap.set('n', '<leader>dn', vim.diagnostic.goto_next)
 vim.keymap.set('n', '<leader>dd', vim.diagnostic.open_float)
 
-vim.keymap.set('n', ';;', ':%s:::g<Left><Left><Left>')
-vim.keymap.set('n', ";'", ':%s:::cg<Left><Left><Left><Left>')
+vim.keymap.set('n', '<leader>rr', ':%s:::g<Left><Left><Left>')
+vim.keymap.set('v', '<leader>rr', ':s:::g<Left><Left><Left>')
 
-vim.keymap.set('v', ';;', ':s:::g<Left><Left><Left>')
-vim.keymap.set('v', ";'", ':s:::cg<Left><Left><Left><Left>')
+vim.keymap.set('n', '<leader>i', [["_diwP]])
 
 -- Visual mode speedy stuff
-vim.keymap.set('v', '<leader>e', '=')
+vim.keymap.set('v', '<>e', '=')
 
 vim.keymap.set('v', 'J', ":m '>+1<CR>gv=gv")
 vim.keymap.set('v', 'K', ":m '<-2<CR>gv=gv")
@@ -196,6 +195,8 @@ vim.keymap.set('v', '<', '<gv')
 -- Fixing indentation
 vim.keymap.set('n', '>', '>>')
 vim.keymap.set('n', '<', '<<')
+
+vim.keymap.set('n', '<leader>w', ":w<cr>")
 
 -- Define a function to toggle line wrap with word break
 function Toggle_wrap()
@@ -780,16 +781,16 @@ require('lazy').setup({
 %?
 
 ** Key Points
-- 
+-
 
 ** Quotes
-- 
+-
 
 ** Questions/Thoughts
-- 
+-
 
 ** Permanent Note Candidates
-- [ ] 
+- [ ]
 ]],
             target = '~/orgfiles/literature/%<%Y%m%d>-${slug}.org',
           },
