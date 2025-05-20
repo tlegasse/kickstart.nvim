@@ -1,7 +1,32 @@
-local lsp = require 'lsp-zero'
-lsp.preset 'recommended'
+-- Modern lsp-zero v2.x+ configuration
+local lsp_zero = require('lsp-zero')
 
-lsp.configure('shopify_theme_ls', {
+lsp_zero.on_attach(function(client, bufnr)
+  -- Keep your existing keybindings
+  local opts = { buffer = bufnr }
+  vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
+  vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
+  vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
+  vim.keymap.set('n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
+  vim.keymap.set('n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
+  vim.keymap.set('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', opts)
+  vim.keymap.set('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<CR>', opts)
+  vim.keymap.set('n', '<leader>d', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
+end)
+
+-- Initialize Mason for LSP server management
+require('mason').setup({})
+require('mason-lspconfig').setup({
+  ensure_installed = {}, -- Add servers you want automatically installed
+  handlers = {
+    lsp_zero.default_setup,
+    -- Custom server configs go here
+  },
+})
+
+-- Configure custom servers directly with lspconfig
+local lspconfig = require('lspconfig')
+lspconfig.shopify_theme_ls.setup({
   cmd = { 'shopify', 'theme', 'language-server' },
   filetypes = { 'liquid' },
   root_dir = function(fname)
@@ -11,44 +36,25 @@ lsp.configure('shopify_theme_ls', {
     enableSchema = true,
     enableCompletions = true,
     enableSnippets = true,
-    enableValidations = false, -- we can turn this on later if needed
+    enableValidations = false,
   },
   flags = {
     debounce_text_changes = 150,
   },
 })
 
-lsp.on_attach(function(_, bufnr)
-  local opts = { buffer = bufnr }
+-- Setup cmp (completion) separately
+local cmp = require('cmp')
+cmp.setup({
+  mapping = {
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<CR>'] = cmp.mapping.confirm({ select = true }),
+    ['<C-n>'] = cmp.mapping.select_next_item(),
+    ['<C-p>'] = cmp.mapping.select_prev_item(),
+    ['<C-d>'] = cmp.mapping.scroll_docs(4),
+    ['<C-u>'] = cmp.mapping.scroll_docs(-4),
+    ['<C-e>'] = cmp.mapping.abort(),
+  },
+})
 
-  -- Quick jumping
-  vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts) -- [G]oto [D]efinition
-  vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts) -- [G]oto [R]eferences
-  vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts) -- Hover docs on cursor
-
-  -- Quick fixes and refactoring
-  vim.keymap.set('n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts) -- [C]ode [A]ction
-  vim.keymap.set('n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts) -- [R]e[n]ame
-
-  -- Diagnostics
-  vim.keymap.set('n', '[d', '<cmd>lua vim.diagnostic.goto_prev()<CR>', opts) -- Previous diagnostic
-  vim.keymap.set('n', ']d', '<cmd>lua vim.diagnostic.goto_next()<CR>', opts) -- Next diagnostic
-  vim.keymap.set('n', '<leader>d', '<cmd>lua vim.diagnostic.open_float()<CR>', opts) -- Show diagnostic
-
-  -- Completion keybinds (in insert mode)
-  local cmp = require 'cmp'
-  cmp.setup {
-    mapping = {
-      ['<C-Space>'] = cmp.mapping.complete(), -- Show completion suggestions
-      ['<CR>'] = cmp.mapping.confirm { select = true }, -- Accept completion
-      ['<C-n>'] = cmp.mapping.select_next_item(), -- Next suggestion
-      ['<C-p>'] = cmp.mapping.select_prev_item(), -- Previous suggestion
-      ['<C-d>'] = cmp.mapping.scroll_docs(4), -- Scroll docs down
-      ['<C-u>'] = cmp.mapping.scroll_docs(-4), -- Scroll docs up
-      ['<C-e>'] = cmp.mapping.abort(), -- Close completion window
-    },
-  }
-end)
-
-lsp.nvim_workspace()
-lsp.setup()
+-- No need for lsp.nvim_workspace() in v2.x+
