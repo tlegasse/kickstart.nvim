@@ -100,10 +100,10 @@ vim.g.have_nerd_font = true
 -- NOTE: You can change these options as you wish!
 --  For more options, you can see `:help option-list`
 
-vim.opt.expandtab = true   -- Use spaces instead of tabs
-vim.opt.shiftwidth = 4     -- Number of spaces for each indentation
-vim.opt.tabstop = 4        -- Number of spaces a tab counts for
-vim.opt.softtabstop = 4    -- Number of spaces a tab counts for when editing
+vim.opt.expandtab = true -- Use spaces instead of tabs
+vim.opt.shiftwidth = 4 -- Number of spaces for each indentation
+vim.opt.tabstop = 4 -- Number of spaces a tab counts for
+vim.opt.softtabstop = 4 -- Number of spaces a tab counts for when editing
 vim.opt.smartindent = true -- Do smart autoindenting when starting a new line
 
 -- Make line numbers default
@@ -268,7 +268,7 @@ vim.opt.rtp:prepend(lazypath)
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
-  'tpope/vim-sleuth',     -- Detect tabstop and shiftwidth automatically
+  'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
   {
     'tpope/vim-fugitive', -- Detect tabstop and shiftwidth automatically
     config = function()
@@ -338,7 +338,7 @@ require('lazy').setup({
       { 'nvim-telescope/telescope-ui-select.nvim' },
 
       -- Useful for getting pretty icons, but requires a Nerd Font.
-      { 'nvim-tree/nvim-web-devicons',            enabled = vim.g.have_nerd_font },
+      { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
     },
     config = function()
       -- Telescope is a fuzzy finder that comes with a lot of different things that
@@ -434,7 +434,7 @@ require('lazy').setup({
       },
     },
   },
-  { 'Bilal2453/luvit-meta',     lazy = true },
+  { 'Bilal2453/luvit-meta', lazy = true },
   {
     'stevearc/oil.nvim',
     ---@module 'oil'
@@ -452,33 +452,60 @@ require('lazy').setup({
   {
     'mattn/emmet-vim',
   },
+
   {
-    'neovim/nvim-lspconfig',
     'williamboman/mason.nvim',
-    'williamboman/mason-lspconfig.nvim',
     config = function()
       require('mason').setup()
-      require('mason-lspconfig').setup()
     end,
   },
   {
-    'VonHeikemen/lsp-zero.nvim',
-    branch = 'v1.x',
+    'williamboman/mason-lspconfig.nvim',
     dependencies = {
-      -- LSP Support
-      -- Autocompletion
-      { 'hrsh7th/nvim-cmp' },         -- Required
-      { 'hrsh7th/cmp-nvim-lsp' },     -- Required
-      { 'hrsh7th/cmp-buffer' },       -- Optional
-      { 'hrsh7th/cmp-path' },         -- Optional
-      { 'saadparwaiz1/cmp_luasnip' }, -- Optional
-      { 'hrsh7th/cmp-nvim-lua' },     -- Optional
-
-      -- Snippets
-      { 'L3MON4D3/LuaSnip' },             -- Required
-      { 'rafamadriz/friendly-snippets' }, -- Optional
+      'williamboman/mason.nvim',
+      'neovim/nvim-lspconfig',
     },
+    config = function()
+      require('mason-lspconfig').setup {
+        -- Servers you want auto-installed
+        ensure_installed = { 'lua_ls', 'pyright' },
+
+        -- Add handlers directly in the setup function
+        handlers = {
+          -- Default handler (will be called for each installed server that doesn't have a dedicated handler)
+          function(server_name)
+            -- Default handler calls lspconfig.<server_name>.setup({})
+            require('lspconfig')[server_name].setup {}
+          end,
+
+          -- Add server-specific handlers here if needed
+          ['lua_ls'] = function()
+            require('lspconfig').lua_ls.setup {
+              settings = {
+                Lua = {
+                  diagnostics = {
+                    globals = { 'vim' },
+                  },
+                },
+              },
+            }
+          end,
+          -- Add more server-specific handlers as needed
+        },
+      }
+    end,
   },
+
+  { 'hrsh7th/nvim-cmp' }, -- Required
+  { 'hrsh7th/cmp-nvim-lsp' }, -- Required
+  { 'hrsh7th/cmp-buffer' }, -- Optional
+  { 'hrsh7th/cmp-path' }, -- Optional
+  { 'saadparwaiz1/cmp_luasnip' }, -- Optional
+  { 'hrsh7th/cmp-nvim-lua' }, -- Optional
+
+  -- Snippets
+  { 'L3MON4D3/LuaSnip' }, -- Required
+  { 'rafamadriz/friendly-snippets' }, -- Optional
 
   { -- Autoformat
     'stevearc/conform.nvim',
@@ -630,7 +657,7 @@ require('lazy').setup({
     end,
   },
   {
-    'RRethy/base16-nvim'
+    'RRethy/base16-nvim',
   },
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
@@ -909,23 +936,21 @@ require('lazy').setup({
   },
 })
 
-test = true
 require 'lsp-config'
 
 vim.api.nvim_create_autocmd('FileType', {
   pattern = 'liquid',
   callback = function()
     vim.opt_local.expandtab = true -- Use spaces
-    vim.opt_local.shiftwidth = 2   -- Number of spaces for indentation
-    vim.opt_local.tabstop = 2      -- Width of tab character
-    vim.opt_local.softtabstop = 2  -- Number of spaces for a tab
+    vim.opt_local.shiftwidth = 2 -- Number of spaces for indentation
+    vim.opt_local.tabstop = 2 -- Width of tab character
+    vim.opt_local.softtabstop = 2 -- Number of spaces for a tab
   end,
 })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
 vim.cmd [[set conceallevel=3]]
-vim.cmd.colorscheme "ibm"
-
+vim.cmd.colorscheme 'ibm'
 
 vim.keymap.set('n', '<leader>c', '<cmd>CsvViewToggle<CR>')
