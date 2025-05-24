@@ -815,7 +815,7 @@ require('lazy').setup({
     end,
   },
   {
-    'RRethy/base16-nvim',
+    'nyoom-engineering/oxocarbon.nvim',
   },
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
@@ -1077,6 +1077,9 @@ require('lazy').setup({
       }
     end,
   },
+  {
+    "xiyaowong/transparent.nvim"
+  }
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
@@ -1127,7 +1130,8 @@ vim.cmd [[set conceallevel=3]]
 
 -- Improve UI appearance
 vim.opt.termguicolors = true
-vim.cmd.colorscheme 'ibm'
+vim.opt.background = "dark" -- set this to dark or light
+vim.cmd.colorscheme "oxocarbon"
 
 -- Improve LSP experience
 -- Setup handlers for better LSP user experience
@@ -1149,26 +1153,6 @@ vim.api.nvim_create_autocmd("BufWritePre", {
     local client = vim.lsp.get_active_clients({ bufnr = 0 })[1]
     if client and client.server_capabilities.documentFormattingProvider then
       vim.lsp.buf.format({ async = false, timeout_ms = 1000 })
-    end
-  end,
-})
-
--- Show context when scrolling
-local function add_highlight_to_context()
-  vim.api.nvim_set_hl(0, "ContextHighlight", { underline = true, sp = "#717CB4" })
-  vim.api.nvim_set_hl(0, "ContextHighlightLineNr", { fg = "#717CB4" })
-end
-
-add_highlight_to_context()
-
--- Make sure snippets work as expected
-vim.api.nvim_create_autocmd({ "InsertLeave", "CursorHold" }, {
-  callback = function()
-    local luasnip = require "luasnip"
-    if luasnip.session and luasnip.session.current_nodes then
-      if not luasnip.session.jump_active and not require("luasnip").jumpable(1) then
-        luasnip.unlink_current()
-      end
     end
   end,
 })
