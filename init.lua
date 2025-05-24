@@ -220,9 +220,6 @@ vim.api.nvim_create_autocmd('FileType', {
 -- Map <leader>sw to the toggle_wrap function
 vim.api.nvim_set_keymap('n', '<leader>tw', '<cmd>lua Toggle_wrap()<CR>', { noremap = true, silent = true })
 
--- Diagnostic keymaps
-vim.keymap.set('n', '<leader>d', vim.diagnostic.setloclist, { desc = 'Open [D]iagnostic quickfix list' })
-
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
 -- is not what someone will guess without a bit more experience.
@@ -452,11 +449,18 @@ require('lazy').setup({
   {
     'mattn/emmet-vim',
   },
-
   {
     'williamboman/mason.nvim',
     config = function()
-      require('mason').setup()
+      require('mason').setup {
+        ui = {
+          icons = {
+            package_installed = '✓',
+            package_pending = '➜',
+            package_uninstalled = '✗',
+          },
+        },
+      }
     end,
   },
   {
@@ -464,48 +468,121 @@ require('lazy').setup({
     dependencies = {
       'williamboman/mason.nvim',
       'neovim/nvim-lspconfig',
+      -- Optional: For enhanced LSP capabilities (auto-completion, snippets)
+      { 'hrsh7th/nvim-cmp' }, -- Required
+      { 'hrsh7th/cmp-buffer' }, -- Optional
+      { 'hrsh7th/cmp-path' }, -- Optional
+      { 'saadparwaiz1/cmp_luasnip' }, -- Optional
+      { 'hrsh7th/cmp-nvim-lua' }, -- Optional
+
+      -- Snippets
+      { 'L3MON4D3/LuaSnip' }, -- Required
+      { 'rafamadriz/friendly-snippets' }, -- Optional
     },
     config = function()
-      require('mason-lspconfig').setup {
-        -- Servers you want auto-installed
-        ensure_installed = { 'lua_ls', 'pyright' },
+      -- Define LSP capabilities (optional but recommended)
+      local capabilities = vim.lsp.protocol.make_client_capabilities()
 
-        -- Add handlers directly in the setup function
+      -- Enhance capabilities for completion if cmp-nvim-lsp is available
+      if pcall(require, 'cmp_nvim_lsp') then
+        capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
+      end
+
+      -- On-attach function for applying keymaps when LSP attaches to a buffer
+      local on_attach = function(_, bufnr)
+        -- Helper for easier keymap setting
+        local nmap = function(keys, func, desc)
+          if desc then
+            desc = 'LSP: ' .. desc
+          end
+          vim.keymap.set('n', keys, func, { buffer = bufnr, desc = desc })
+        end
+
+        -- Define keymaps
+        nmap('gd', vim.lsp.buf.definition, 'Go to Definition')
+        nmap('gr', vim.lsp.buf.references, 'Go to References')
+        nmap('gi', vim.lsp.buf.implementation, 'Go to Implementation')
+        nmap('K', vim.lsp.buf.hover, 'Hover Documentation')
+        nmap('<leader>rn', vim.lsp.buf.rename, 'Rename')
+        nmap('<leader>ca', vim.lsp.buf.code_action, 'Code Action')
+        nmap('<leader>D', vim.lsp.buf.type_definition, 'Type Definition')
+        nmap('<leader>f', function()
+          vim.lsp.buf.format { async = true }
+        end, 'Format Document')
+
+        -- Diagnostics keymaps
+        nmap('[d', vim.diagnostic.goto_prev, 'Previous Diagnostic')
+        nmap(']d', vim.diagnostic.goto_next, 'Next Diagnostic')
+        nmap('<leader>d', vim.diagnostic.open_float, 'Show Diagnostic Error')
+
+        local cmp = require 'cmp'
+        cmp.setup {
+          mapping = {
+            ['<C-Space>'] = cmp.mapping.complete(), -- Show completion suggestions
+            ['<CR>'] = cmp.mapping.confirm { select = true }, -- Accept completion
+            ['<C-n>'] = cmp.mapping.select_next_item(), -- Next suggestion
+            ['<C-p>'] = cmp.mapping.select_prev_item(), -- Previous suggestion
+            ['<C-d>'] = cmp.mapping.scroll_docs(4), -- Scroll docs down
+            ['<C-u>'] = cmp.mapping.scroll_docs(-4), -- Scroll docs up
+            ['<C-e>'] = cmp.mapping.abort(), -- Close completion window
+          },
+        }
+      end
+
+      -- Configure mason-lspconfig
+      require('mason-lspconfig').setup {
+        -- Servers to automatically install
+        ensure_installed = {
+          'lua_ls',
+          'pyright',
+        },
+
+        -- Configure how servers are set up
         handlers = {
-          -- Default handler (will be called for each installed server that doesn't have a dedicated handler)
+          -- Default handler - applied to all servers that don't have a specific handler
           function(server_name)
-            -- Default handler calls lspconfig.<server_name>.setup({})
-            require('lspconfig')[server_name].setup {}
+            require('lspconfig')[server_name].setup {
+              capabilities = capabilities,
+              on_attach = on_attach,
+            }
           end,
 
-          -- Add server-specific handlers here if needed
+          -- Custom configurations for specific servers
           ['lua_ls'] = function()
             require('lspconfig').lua_ls.setup {
+              capabilities = capabilities,
+              on_attach = on_attach,
               settings = {
                 Lua = {
                   diagnostics = {
-                    globals = { 'vim' },
+                    globals = { 'vim' }, -- Recognize 'vim' global
+                  },
+                  workspace = {
+                    library = vim.api.nvim_get_runtime_file('', true),
+                    checkThirdParty = false,
+                  },
+                  telemetry = {
+                    enable = false,
                   },
                 },
               },
             }
           end,
-          -- Add more server-specific handlers as needed
+
+          -- Add other server-specific configurations as needed
         },
+      }
+
+      -- Configure diagnostic display
+      vim.diagnostic.config {
+        virtual_text = true, -- Show diagnostics as virtual text
+        signs = true, -- Show signs in the sign column
+        underline = true, -- Underline text with diagnostics
+        update_in_insert = false, -- Don't update diagnostics in insert mode
+        severity_sort = true, -- Sort diagnostics by severity
       }
     end,
   },
-
-  { 'hrsh7th/nvim-cmp' }, -- Required
-  { 'hrsh7th/cmp-nvim-lsp' }, -- Required
-  { 'hrsh7th/cmp-buffer' }, -- Optional
-  { 'hrsh7th/cmp-path' }, -- Optional
-  { 'saadparwaiz1/cmp_luasnip' }, -- Optional
-  { 'hrsh7th/cmp-nvim-lua' }, -- Optional
-
-  -- Snippets
-  { 'L3MON4D3/LuaSnip' }, -- Required
-  { 'rafamadriz/friendly-snippets' }, -- Optional
 
   { -- Autoformat
     'stevearc/conform.nvim',
@@ -583,7 +660,7 @@ require('lazy').setup({
       local cmp = require 'cmp'
       local luasnip = require 'luasnip'
       luasnip.config.setup {
-        require('luasnip.loaders.from_lua').load { paths = '~/.config/nvim/lua/snippets/' },
+        require('luasnip.loaders.from_lua').load { paths = './lua/snippets/' },
       }
 
       cmp.setup {
@@ -611,7 +688,7 @@ require('lazy').setup({
           -- Accept ([y]es) the completion.
           --  This will auto-import if your LSP supports it.
           --  This will expand snippets if the LSP sent a snippet.
-          ['<C-y>'] = cmp.mapping.confirm { select = true },
+          ['<Enter>'] = cmp.mapping.confirm { select = true },
 
           -- If you prefer more traditional completion keymaps,
           -- you can uncomment the following lines
@@ -936,8 +1013,6 @@ require('lazy').setup({
   },
 })
 
-require 'lsp-config'
-
 vim.api.nvim_create_autocmd('FileType', {
   pattern = 'liquid',
   callback = function()
@@ -951,6 +1026,7 @@ vim.api.nvim_create_autocmd('FileType', {
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
 vim.cmd [[set conceallevel=3]]
-vim.cmd.colorscheme 'ibm'
 
 vim.keymap.set('n', '<leader>c', '<cmd>CsvViewToggle<CR>')
+
+vim.cmd.colorscheme 'ibm'

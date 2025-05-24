@@ -1,4 +1,4 @@
-require('mini.base16').setup({
+require('mini.base16').setup {
   palette = {
     base00 = '#121619', -- Background
     base01 = '#001141', -- Gutter, active line
@@ -22,4 +22,4 @@ require('mini.base16').setup({
     default = false,
     ['echasnovski/mini.nvim'] = true,
   },
-})
+}
