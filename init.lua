@@ -785,14 +785,18 @@ require('lazy').setup({
 
         -- Match completion behavior to editor behavior
         completion = {
-          completeopt = 'menu,menuone,noinsert',
+          completeopt = 'menu,menuone,noselect',
           keyword_length = 1, -- Start after 1 character
-          keyword_pattern = [=[\%(-\?\d\+\%(\.\d\+\)\?\|\h\w*\%(-\w*\)*\)]]=],
+          autocomplete = {    -- Add this section
+            require('cmp.types').cmp.TriggerEvent.TextChanged,
+          },
         },
+
+        preselect = require('cmp.types').cmp.PreselectMode.None,
 
         -- Improve experimental features
         experimental = {
-          ghost_text = false, -- Set to true if you want inline ghost text
+          ghost_text = true, -- Set to true if you want inline ghost text
         },
       })
 
