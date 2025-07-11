@@ -715,8 +715,8 @@ require('lazy').setup({
           ['<Tab>'] = cmp.mapping(function(fallback)
             if cmp.visible() then
               cmp.select_next_item()
-            elseif luasnip.expand_or_jumpable() then
-              luasnip.expand_or_jump()
+            elseif luasnip.locally_jumpable(1) then
+              luasnip.jump(1)
             elseif has_words_before() then
               cmp.complete()
             else
@@ -727,7 +727,7 @@ require('lazy').setup({
           ['<S-Tab>'] = cmp.mapping(function(fallback)
             if cmp.visible() then
               cmp.select_prev_item()
-            elseif luasnip.jumpable(-1) then
+            elseif luasnip.locally_jumpable(-1) then
               luasnip.jump(-1)
             else
               fallback()
@@ -1026,13 +1026,13 @@ require('lazy').setup({
           m = 'Meeting',
           mr = {
             description = 'Recurring',
-            template = '** Meeting: %t %?\n:PROPERTIES:\n:Date: %t\n:Participants: \n:END:\n\n*** Agenda\n\n\n*** Notes\n\n\n*** Action Items\n- [ ] \n',
+            template = '** Meeting: %t %?\n:PROPERTIES:\n:Date: %t\n:Participants: %^{Participants}\n:Client: %^{Client}\n:Project: %^{Project}\n:END:\n\n*** Agenda\n\n\n*** Notes\n\n\n*** Action Items\n**** TODO \n',
             target = '~/orgfiles/meetings.org',
             headline = 'Recurring',
           },
           mo = {
             description = 'One time',
-            template = '** Meeting: %t %?\n:PROPERTIES:\n:Date: %t\n:Participants: \n:END:\n\n*** Agenda\n\n\n*** Notes\n\n\n*** Action Items\n- [ ] \n',
+            template = '** Meeting: %t %?\n:PROPERTIES:\n:Date: %t\n:Participants: %^{Participants}\n:Client: %^{Client}\n:Project: %^{Project}\n:END:\n\n*** Agenda\n\n\n*** Notes\n\n\n*** Action Items\n**** TODO \n',
             target = '~/orgfiles/meetings.org',
             headline = 'One Time',
           },
@@ -1135,7 +1135,7 @@ vim.cmd [[set conceallevel=3]]
 -- Improve UI appearance
 vim.opt.termguicolors = true
 vim.opt.background = "dark" -- set this to dark or light
-vim.cmd.colorscheme "oxocarbon"
+vim.cmd.colorscheme "vim"
 
 -- Improve LSP experience
 -- Setup handlers for better LSP user experience
@@ -1160,3 +1160,6 @@ vim.api.nvim_create_autocmd("BufWritePre", {
     end
   end,
 })
+
+
+vim.opt.clipboard = 'unnamedplus'
