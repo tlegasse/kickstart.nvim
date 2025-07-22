@@ -102,9 +102,6 @@ vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 vim.opt.expandtab = true   -- Use spaces instead of tabs
-vim.opt.shiftwidth = 4     -- Number of spaces for each indentation
-vim.opt.tabstop = 4        -- Number of spaces a tab counts for
-vim.opt.softtabstop = 4    -- Number of spaces a tab counts for when editing
 vim.opt.smartindent = true -- Do smart autoindenting when starting a new line
 vim.opt.autoindent = true  -- Copy indent from current line when starting new line
 vim.opt.shiftround = true  -- Round indent to multiple of shiftwidth
@@ -169,7 +166,6 @@ vim.opt.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 3
 
-vim.opt.gdefault = true  -- Global replace by default
 vim.opt.hlsearch = true  -- Highlight search results
 vim.opt.incsearch = true -- Incremental search
 
@@ -648,7 +644,7 @@ require('lazy').setup({
                 config = function()
                     require('luasnip.loaders.from_vscode').lazy_load() -- Load vscode-like snippets
                     if vim.fn.filereadable(vim.fn.expand('~/.config/nvim/lua/snippets/init.lua')) == 1 then
-                        require('luasnip.loaders.from_lua').load { paths = './lua/snippets/' }
+                        require('luasnip.loaders.from_lua').load { paths = '~/.config/nvim/lua/snippets/' }
                     end
                 end,
             },
@@ -869,6 +865,28 @@ require('lazy').setup({
             --  Check out: https://github.com/echasnovski/mini.nvim
         end,
     },
+    {
+        "hat0uma/csvview.nvim",
+        ---@module "csvview"
+        ---@type CsvView.Options
+        opts = {
+            parser = { comments = { "#", "//" } },
+            keymaps = {
+            -- Text objects for selecting fields
+            textobject_field_inner = { "if", mode = { "o", "x" } },
+            textobject_field_outer = { "af", mode = { "o", "x" } },
+            -- Excel-like navigation:
+            -- Use <Tab> and <S-Tab> to move horizontally between fields.
+            -- Use <Enter> and <S-Enter> to move vertically between rows and place the cursor at the end of the field.
+            -- Note: In terminals, you may need to enable CSI-u mode to use <S-Tab> and <S-Enter>.
+            jump_next_field_end = { "<Tab>", mode = { "n", "v" } },
+            jump_prev_field_end = { "<S-Tab>", mode = { "n", "v" } },
+            jump_next_row = { "<Enter>", mode = { "n", "v" } },
+            jump_prev_row = { "<S-Enter>", mode = { "n", "v" } },
+            },
+        },
+        cmd = { "CsvViewEnable", "CsvViewDisable", "CsvViewToggle" },
+    },
     { -- Highlight, edit, and navigate code
         'nvim-treesitter/nvim-treesitter',
         event = { "BufReadPost", "BufNewFile" },
@@ -981,12 +999,12 @@ require('lazy').setup({
             }
         end,
     },
-    {
-        'ggandor/leap.nvim',
-        config = function()
-            require('leap').create_default_mappings()
-        end,
-    },
+    -- {
+    --     'ggandor/leap.nvim',
+    --     config = function()
+    --         require('leap').create_default_mappings()
+    --     end,
+    -- },
     {
         'Mofiqul/dracula.nvim',
         config = function()
@@ -1168,16 +1186,6 @@ vim.lsp.handlers["textDocument/signatureHelp"] = vim.lsp.with(
     vim.lsp.handlers.signature_help, { border = "rounded" }
 )
 
--- Add to your LSP config:
-vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
-    vim.lsp.handlers.publish_diagnostics, {
-        update_in_insert = false,
-        virtual_text = false,
-        signs = false,     -- Turn off signs for maximum speed
-        underline = false, -- Turn off underline too
-    }
-)
-
 -- This lets us detect inactive language servers faster
 vim.lsp.set_log_level("ERROR")
 
@@ -1187,9 +1195,6 @@ vim.api.nvim_create_autocmd({ "BufNewFile", "BufRead" }, {
     pattern = "*",
     callback = function()
         vim.opt_local.expandtab = true
-        vim.opt_local.shiftwidth = 4
-        vim.opt_local.tabstop = 4
-        vim.opt_local.softtabstop = 4
     end,
 })
 
@@ -1197,8 +1202,13 @@ vim.api.nvim_create_autocmd("FileType", {
     pattern = "*",
     callback = function()
         vim.opt_local.expandtab = true
-        vim.opt_local.shiftwidth = 4
-        vim.opt_local.tabstop = 4
-        vim.opt_local.softtabstop = 4
     end,
 })
+
+vim.diagnostic.config {
+  update_in_insert = false,
+  virtual_text = false,
+  signs = false,
+  underline = false,
+  severity_sort = true,
+}

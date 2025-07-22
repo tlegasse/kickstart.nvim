@@ -191,7 +191,7 @@ DEADLINE: <{}>
     )
   ),
   s(
-    'tbl',
+    'table',
     fmt(
       [[
 | {}
