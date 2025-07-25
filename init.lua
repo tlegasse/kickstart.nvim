@@ -240,6 +240,18 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 vim.keymap.set('n', '<leader>v', '<C-w>v') -- Vertical split
 vim.keymap.set('n', '<leader>x', '<C-w>s') -- Horizontal split
 vim.keymap.set('n', '<leader>=', '<C-w>=') -- Equalize windows
+vim.keymap.set({'n','v'}, '<leader><leader>', ':')
+
+vim.keymap.set({"n","x"}, "p", "<Plug>(YankyPutAfter)")
+vim.keymap.set({"n","x"}, "P", "<Plug>(YankyPutBefore)")
+vim.keymap.set({"n","x"}, "gp", "<Plug>(YankyGPutAfter)")
+vim.keymap.set({"n","x"}, "gP", "<Plug>(YankyGPutBefore)")
+
+vim.keymap.set("n", "<c-p>", "<Plug>(YankyPreviousEntry)")
+vim.keymap.set("n", "<c-n>", "<Plug>(YankyNextEntry)")
+vim.keymap.set("n", "<leader>p", "<CMD>Telescope yank_history<CR>")
+
+vim.keymap.set('n', '<leader>oo', '<cmd>e ~/orgfiles/__index.org<CR>')
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -248,6 +260,8 @@ vim.keymap.set('n', '<leader>=', '<C-w>=') -- Equalize windows
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 vim.opt.rtp:prepend(lazypath)
+
+vim.keymap.set('n', '<leader>u', "<CMD>UndotreeToggle<CR><C-w><C-w>")
 
 -- [[ Configure and install plugins ]]
 --
@@ -274,7 +288,55 @@ require('lazy').setup({
             vim.keymap.set('n', '<leader>gd', ':G pull --rebase<CR>')
         end,
     },
-
+    {
+        'kylechui/nvim-surround',
+        version = '*', -- Use for stability; omit to use `main` branch for the latest features
+        event = 'VeryLazy',
+        config = function()
+            require('nvim-surround').setup {
+                keymaps = {
+                    insert = '<C-g>s',
+                    insert_line = '<C-g>S',
+                    normal_cur = '<leader>ss',
+                    normal_cur_line = '<leader>SS',
+                    visual = '<leader>s',
+                    visual_line = '<leader>S',
+                    delete = 'ds',
+                    change = 'cs',
+                    change_line = 'cS',
+                },
+                -- Configuration here, or leave empty to use defaults
+            }
+        end,
+    },
+    {
+        'ggandor/leap.nvim',
+        config = function()
+            require('leap').create_default_mappings()
+        end,
+    },
+    {
+        "mbbill/undotree",
+    },
+    {
+        "gbprod/yanky.nvim",
+        opts = {
+            highlight = {
+                on_put = false,
+                on_yank = false,
+            },
+            ring = {
+                history_length = 100,
+                storage = "shada",
+                storage_path = vim.fn.stdpath("data") .. "/databases/yanky.db", -- Only for sqlite storage
+                sync_with_numbered_registers = true,
+                cancel_event = "update",
+                ignore_registers = { "_" },
+                update_register_on_cycle = false,
+                permanent_wrapper = nil,
+            },
+        },
+    },
     -- NOTE: Plugins can also be added by using a table,
     -- with the first argument being the link and the following
     -- keys can be used to configure plugin behavior/loading/etc.
@@ -378,7 +440,6 @@ require('lazy').setup({
             vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
             vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
             vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
-            vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
 
             -- Slightly advanced example of overriding default behavior and theme
             vim.keymap.set('n', '<leader>/', function()
@@ -548,7 +609,109 @@ require('lazy').setup({
             }
         end,
     },
+    {
+        'nvim-orgmode/org-bullets.nvim',
+        config = function()
+            require('org-bullets').setup()
+        end,
+    },
+    {
+        'nvim-orgmode/orgmode',
+        ft = { 'org' },
+        event = 'VeryLazy',
+        config = function()
+            require('orgmode').setup {
+                org_agenda_files = '~/orgfiles/**/*',
+                org_startup_folded = 'content',
+                org_default_notes_file = '~/orgfiles/inbox.org',
+                org_hide_emphasis_markers = true,
+                org_capture_templates = {
+                    l = {
+                        description = 'Literature Note',
+                        template = [[* %^{Title}
+:PROPERTIES:
+:ID:       %(random-hex)
+:CREATED:  %U
+:SOURCE:   %^{Source|Article|Book|Paper|Video|Podcast}
+:AUTHOR:   %^{Author}
+:URL:      %^{URL}
+:END:
 
+** Summary
+%?
+
+** Key Points
+-
+
+** Quotes
+-
+
+** Questions/Thoughts
+-
+
+** Permanent Note Candidates
+- [ ]
+]],
+                        target = '~/orgfiles/literature/%<%Y%m%d>-${slug}.org',
+                    },
+                    m = 'Meeting',
+                    mr = {
+                        description = 'Recurring',
+                        template = '** Meeting: %t %?\n:PROPERTIES:\n:Date: %t\n:Participants: %^{Participants}\n:Client: %^{Client}\n:Project: %^{Project}\n:END:\n\n*** Agenda\n\n\n*** Notes\n\n\n*** Action Items\n**** TODO \n',
+                        target = '~/orgfiles/meetings.org',
+                        headline = 'Recurring',
+                    },
+                    mo = {
+                        description = 'One time',
+                        template = '** Meeting: %t %?\n:PROPERTIES:\n:Date: %t\n:Participants: %^{Participants}\n:Client: %^{Client}\n:Project: %^{Project}\n:END:\n\n*** Agenda\n\n\n*** Notes\n\n\n*** Action Items\n**** TODO \n',
+                        target = '~/orgfiles/meetings.org',
+                        headline = 'One Time',
+                    },
+                    t = 'Task',
+                    th = {
+                        description = 'Healthcare',
+                        template = '** TODO %^{Task description}\nDEADLINE: %^{Deadline Date}t',
+                        target = '~/orgfiles/healthcare-moc.org',
+                        headline = 'TODOS',
+                    },
+                    tg = {
+                        description = 'General',
+                        template = '** TODO %^{Task description}\nDEADLINE: %^{Deadline Date}t',
+                        target = '~/orgfiles/inbox.org',
+                        headline = 'TODOS',
+                    },
+                    f = {
+                        description = 'Fleeting note',
+                        template = '\n* %? :inbox:\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n',
+                        target = '~/orgfiles/inbox.org',
+                    },
+                    l = {
+                        description = 'LeetCode Problem',
+                        template = '* TODO [[%^{Problem URL}][%^{Problem Title}]]\n:PROPERTIES:\n:Difficulty: %^{Difficulty|Easy|Medium|Hard}\n:Pattern: %^{Pattern}\n:Priority: %^{Priority|High|Medium|Low}\n:END:\n%?',
+                        target = '~/orgfiles/leet-code.org',
+                    },
+                    L = {
+                        description = 'New LeetCode Problem',
+                        template = '~/.config/nvim/templates/leetcode-problems.org',
+                        target = '~/org/leetcode/%<%Y%m%d>-${slug}.org',
+                        type = 'file',
+                    },
+                },
+            }
+
+            vim.keymap.set('n', '<leader>oo', '<cmd>e ~/orgfiles/__index.org<CR>')
+        end,
+    },
+    {
+        'chipsenkbeil/org-roam.nvim',
+        tag = '0.1.1',
+        config = function()
+            require('org-roam').setup {
+
+                directory = '~/orgfiles',
+            }
+        end,
+    },
     { -- Autocompletion
         'hrsh7th/nvim-cmp',
         event = 'InsertEnter',
@@ -703,5 +866,7 @@ vim.opt.swapfile = false
 vim.opt.backup = false
 vim.opt.writebackup = false
 
+vim.opt.conceallevel = 2
+vim.opt.concealcursor = 'nc'
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
