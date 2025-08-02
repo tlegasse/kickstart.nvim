@@ -242,13 +242,6 @@ vim.keymap.set('n', '<leader>x', '<C-w>s') -- Horizontal split
 vim.keymap.set('n', '<leader>=', '<C-w>=') -- Equalize windows
 vim.keymap.set({'n','v'}, '<leader><leader>', ':')
 
-vim.keymap.set({"n","x"}, "p", "<Plug>(YankyPutAfter)")
-vim.keymap.set({"n","x"}, "P", "<Plug>(YankyPutBefore)")
-vim.keymap.set({"n","x"}, "gp", "<Plug>(YankyGPutAfter)")
-vim.keymap.set({"n","x"}, "gP", "<Plug>(YankyGPutBefore)")
-
-vim.keymap.set("n", "<c-p>", "<Plug>(YankyPreviousEntry)")
-vim.keymap.set("n", "<c-n>", "<Plug>(YankyNextEntry)")
 vim.keymap.set("n", "<leader>p", "<CMD>Telescope yank_history<CR>")
 
 vim.keymap.set('n', '<leader>oo', '<cmd>e ~/orgfiles/__index.org<CR>')
@@ -275,7 +268,11 @@ vim.keymap.set('n', '<leader>u', "<CMD>UndotreeToggle<CR><C-w><C-w>")
 --
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
-    'tpope/vim-sleuth',
+    -- using packer.nvim
+    {
+        'nmac427/guess-indent.nvim',
+        config = function() require('guess-indent').setup {} end,
+    },
     {
         'tpope/vim-fugitive',
         config = function()
@@ -771,7 +768,7 @@ require('lazy').setup({
                     ['<Tab>'] = cmp.mapping(function(fallback)
                         if cmp.visible() then
                             cmp.select_next_item()
-                        elseif luasnip.expand_or_jumpable() then
+                        elseif luasnip.locally_jumpable(1) then
                             luasnip.expand_or_jump()
                         else
                             fallback()
