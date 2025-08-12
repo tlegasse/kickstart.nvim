@@ -100,6 +100,9 @@ vim.g.loaded_node_provider = 0
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_python3_provider = 0
 vim.g.loaded_ruby_provider = 0
+vim.loader.enable() -- Faster module loading (if Neovim 0.9+)
+vim.opt.lazyredraw = true -- Don't redraw during macros
+vim.opt.ttyfast = true -- Faster terminal
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -183,6 +186,9 @@ vim.opt.incsearch = true -- Incremental search
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 vim.keymap.set('n', '<leader>q', '<cmd>bd<CR>')
+vim.keymap.set('n', '<leader>bp', '<cmd>bp<CR>')
+vim.keymap.set('n', '<leader>bn', '<cmd>bn<CR>')
+
 vim.keymap.set('n', '<leader>e', '<cmd>Oil<CR>')
 
 vim.keymap.set('n', '<leader>de', vim.diagnostic.setloclist)
@@ -191,7 +197,7 @@ vim.keymap.set('n', '<leader>dd', vim.diagnostic.open_float)
 vim.keymap.set('n', '<leader>rr', ':%s:::g<Left><Left><Left>')
 vim.keymap.set('v', '<leader>rr', ':s:::g<Left><Left><Left>')
 
-vim.keymap.set('n', '<leader>i', [["_diwP]])
+vim.keymap.set('n', '<leader>i', [["_ciw<C-r>+<Esc>]])
 
 -- Visual mode speedy stuff
 vim.keymap.set('v', '<>e', '=')
@@ -221,14 +227,6 @@ end
 -- Map <leader>sw to the toggle_wrap function
 vim.api.nvim_set_keymap('n', '<leader>tw', '<cmd>lua Toggle_wrap()<CR>', { noremap = true, silent = true })
 
--- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
--- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
--- is not what someone will guess without a bit more experience.
---
--- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
--- or just use <C-\><C-n> to exit terminal mode
-vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
-
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
 --
@@ -237,10 +235,7 @@ vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left wind
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
-vim.keymap.set('n', '<leader>v', '<C-w>v') -- Vertical split
-vim.keymap.set('n', '<leader>x', '<C-w>s') -- Horizontal split
-vim.keymap.set('n', '<leader>=', '<C-w>=') -- Equalize windows
-vim.keymap.set({'n','v'}, '<leader><leader>', ':')
+vim.keymap.set({'n','v'}, '<leader><leader>', '<CMD>Telescope buffers<CR>')
 
 vim.keymap.set("n", "<leader>p", "<CMD>Telescope yank_history<CR>")
 
@@ -271,19 +266,21 @@ require('lazy').setup({
     -- using packer.nvim
     {
         'nmac427/guess-indent.nvim',
+        event  = 'BufReadPost',
         config = function() require('guess-indent').setup {} end,
     },
     {
         'tpope/vim-fugitive',
-        config = function()
-            vim.keymap.set('n', '<leader>ga', ':G add .<CR>')
-            vim.keymap.set('n', '<leader>gs', vim.cmd.Git)
-            vim.keymap.set('n', '<leader>gc', ":G commit -m '")
-            vim.keymap.set('n', '<leader>go', ':GBrowse<CR>')
-            vim.keymap.set('n', '<leader>gb', ':G checkout ')
-            vim.keymap.set('n', '<leader>gu', ':G push<CR>')
-            vim.keymap.set('n', '<leader>gd', ':G pull --rebase<CR>')
-        end,
+        cmd = { 'Git', 'G', 'GBrowse' },
+        keys = {
+            { '<leader>ga', ':G add .<CR>', desc = 'Git add all' },
+            { '<leader>gs', '<cmd>Git<CR>', desc = 'Git status' },
+            { '<leader>gc', ":G commit -m '", desc = 'Git commit' },
+            { '<leader>go', ':GBrowse<CR>', desc = 'Git browse' },
+            { '<leader>gb', ':G checkout ', desc = 'Git checkout' },
+            { '<leader>gu', ':G push<CR>', desc = 'Git push' },
+            { '<leader>gd', ':G pull --rebase<CR>', desc = 'Git pull' },
+        }
     },
     {
         'kylechui/nvim-surround',
@@ -308,15 +305,21 @@ require('lazy').setup({
     },
     {
         'ggandor/leap.nvim',
+        keys = { 's', 'S', 'gs' }, -- Default leap mappings
         config = function()
             require('leap').create_default_mappings()
         end,
     },
     {
         "mbbill/undotree",
+        cmd = 'UndotreeToggle',
+        keys = { { '<leader>u', '<CMD>UndotreeToggle<CR><C-w><C-w>', desc = 'Toggle Undotree' } },
     },
     {
         "gbprod/yanky.nvim",
+        keys = { 
+            { '<leader>p', '<CMD>Telescope yank_history<CR>', desc = 'Yank history' },
+        },
         opts = {
             highlight = {
                 on_put = false,
@@ -325,7 +328,7 @@ require('lazy').setup({
             ring = {
                 history_length = 100,
                 storage = "shada",
-                storage_path = vim.fn.stdpath("data") .. "/databases/yanky.db", -- Only for sqlite storage
+                storage_path = vim.fn.stdpath("data") .. "/databases/yanky.db",
                 sync_with_numbered_registers = true,
                 cancel_event = "update",
                 ignore_registers = { "_" },
@@ -350,7 +353,31 @@ require('lazy').setup({
     -- you do for a plugin at the top level, you can do for a dependency.
     --
     -- Use the `dependencies` key to specify the dependencies of a particular plugin
+    {
+        "ThePrimeagen/harpoon",
+        branch = "harpoon2",
+        dependencies = { "nvim-lua/plenary.nvim" },
 
+        keys = {
+            { "<leader>a", function() require('harpoon'):list():add() end, desc= 'Harpoon add' },
+            { "<leader>l", function() require('harpoon').ui:toggle_quick_menu(require('harpoon'):list()) end, desc= 'Harpoon list' },
+            { "<leader>g", function() require('harpoon'):list():select(1) end },
+            { "<leader>c", function() require('harpoon'):list():select(2) end },
+            { "<leader>r", function() require('harpoon'):list():select(3) end },
+            { "<leader>h", function() require('harpoon'):list():select(4) end },
+            { "<C-S-P>",   function() require('harpoon'):list():prev() end },
+            { "<C-S-N>",   function() require('harpoon'):list():next() end },
+        },
+        config = function()
+            require('harpoon'):setup({
+                settings = {
+                    save_on_toggle = true,
+                    sync_on_ui_close = false,
+                    save_on_change = false,
+                }
+            })
+        end
+    },
     { -- Fuzzy Finder (files, lsp, etc)
         'nvim-telescope/telescope.nvim',
         event = 'VimEnter',
@@ -457,7 +484,7 @@ require('lazy').setup({
             end, { desc = '[S]earch [/] in Open Files' })
 
             -- Shortcut for searching your Neovim configuration files
-            vim.keymap.set('n', '<leader>sn', function()
+            vim.keymap.set('n', '<leader>v', function()
                 builtin.find_files { cwd = vim.fn.stdpath 'config' }
             end, { desc = '[S]earch [N]eovim files' })
         end,
@@ -492,6 +519,7 @@ require('lazy').setup({
     },
     {
         'williamboman/mason.nvim',
+        cmd = 'Mason',
         config = function()
             require('mason').setup {
                 ui = {
@@ -506,6 +534,7 @@ require('lazy').setup({
     },
     {
         'williamboman/mason-lspconfig.nvim',
+        event = { 'BufReadPre', 'BufNewFile' },
         dependencies = {
             'williamboman/mason.nvim',
             'neovim/nvim-lspconfig',
@@ -607,16 +636,13 @@ require('lazy').setup({
         end,
     },
     {
-        'nvim-orgmode/org-bullets.nvim',
-        config = function()
-            require('org-bullets').setup()
-        end,
-    },
-    {
         'nvim-orgmode/orgmode',
         ft = { 'org' },
-        event = 'VeryLazy',
+        event = 'VeryLazy', -- Keep both for flexibility
+        dependencies = { 'nvim-orgmode/org-bullets.nvim' },
         config = function()
+            -- Move org-bullets config here too
+            require('org-bullets').setup()
             require('orgmode').setup {
                 org_agenda_files = '~/orgfiles/**/*',
                 org_startup_folded = 'content',
@@ -702,16 +728,17 @@ require('lazy').setup({
     {
         'chipsenkbeil/org-roam.nvim',
         tag = '0.1.1',
+        ft = { 'org' }, -- Only load for org files
+        cmd = { 'OrgRoamNodeFind', 'OrgRoamNodeInsert' },
         config = function()
             require('org-roam').setup {
-
                 directory = '~/orgfiles',
             }
         end,
     },
     { -- Autocompletion
         'hrsh7th/nvim-cmp',
-        event = 'InsertEnter',
+        event = { 'InsertEnter', 'CmdlineEnter' },
         dependencies = {
             -- Snippet Engine & its associated nvim-cmp source
             {
@@ -804,14 +831,13 @@ require('lazy').setup({
     },
     {
         'nvim-treesitter/nvim-treesitter',
-        event = { 'BufReadPost', 'BufNewFile' },
+        event = { 'VeryLazy' }, -- Changed from BufReadPost
         build = ':TSUpdate',
         main = 'nvim-treesitter.configs',
         opts = {
-            ensure_installed = { 'bash', 'c', 'css', 'html', 'javascript', 'json', 'lua', 'markdown', 'python', 'typescript', 'yaml' },
-            auto_install = true,
+            auto_install = false,
             highlight = { enable = true },
-            indent = { enable = true, disable = { 'python' } },
+            indent = { enable = true },
             incremental_selection = {
                 enable = true,
                 keymaps = {
@@ -822,7 +848,15 @@ require('lazy').setup({
             },
         },
     },
-    { "Mofiqul/dracula.nvim" },
+    {
+        "folke/zen-mode.nvim",
+        opts = {
+            -- your configuration comes here
+            -- or leave it empty to use the default settings
+            -- refer to the configuration section below
+        }
+    },
+    { "Mofiqul/dracula.nvim", lazy = false, priority = 1000 },
     require('kickstart.plugins.autopairs'),
     require('kickstart.plugins.gitsigns'),
 }, {
@@ -848,14 +882,8 @@ require('lazy').setup({
 })
 
 
--- Enable true color
-if vim.fn.has("termguicolors") == 1 then
-    vim.opt.termguicolors = true
-end
-
 -- Set colorscheme
 vim.opt.termguicolors = true
-vim.opt.background = 'dark'
 vim.cmd.colorscheme 'dracula'
 
 -- No swap/backup files
@@ -865,5 +893,3 @@ vim.opt.writebackup = false
 
 vim.opt.conceallevel = 2
 vim.opt.concealcursor = 'nc'
--- The line beneath this is called `modeline`. See `:help modeline`
--- vim: ts=2 sts=2 sw=2 et
