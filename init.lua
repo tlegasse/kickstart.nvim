@@ -213,6 +213,9 @@ vim.keymap.set('n', '>', '>>')
 vim.keymap.set('n', '<', '<<')
 
 vim.keymap.set('n', '<leader>w', ':w<cr>')
+
+
+vim.keymap.set('n', '<leader>of', ':lua vim.ui.open(vim.fn.expand("%"))<cr>')
 vim.opt.wrap = false
 
 -- Define a function to toggle line wrap with word break
