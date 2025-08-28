@@ -183,6 +183,7 @@ vim.opt.incsearch = true -- Incremental search
 
 -- Clear highlights on search when pressing <Esc> in normal mode
 --  See `:help hlsearch`
+vim.keymap.set('n', '<leader>z', '<cmd>ZenMode<cr>')
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 vim.keymap.set('n', '<leader>q', '<cmd>bd<CR>')
@@ -852,12 +853,39 @@ require('lazy').setup({
         },
     },
     {
-        "folke/zen-mode.nvim",
+        "folke/twilight.nvim",
         opts = {
             -- your configuration comes here
             -- or leave it empty to use the default settings
             -- refer to the configuration section below
         }
+    },
+    {
+        "folke/zen-mode.nvim",
+        opts = {
+            window = {
+                backdrop = 25, -- shade the backdrop of the Zen window. Set to 1 to keep the same as Normal
+                width = 0.66, -- width of the Zen window
+                height = 1, -- height of the Zen window
+                options = {
+                    signcolumn = "no", -- disable signcolumn
+                    number = false, -- disable number column
+                    relativenumber = false, -- disable relative numbers
+                },
+            },
+            plugins = {
+                options = {
+                    enabled = true,
+                    ruler = false, -- disables the ruler text in the cmd line area
+                    showcmd = false, -- disables the command in the last line of the screen
+                    -- you may turn on/off statusline in zen mode by setting 'laststatus' 
+                    -- statusline will be shown only if 'laststatus' == 3
+                    laststatus = 1, -- turn off the statusline in zen mode
+                },
+                twilight = { enabled = true }, -- enable to start Twilight when zen mode opens
+                tmux = { enabled = true }, -- disables the tmux statusline
+            },
+        },
     },
     { "Mofiqul/dracula.nvim", lazy = false, priority = 1000 },
     require('kickstart.plugins.autopairs'),
