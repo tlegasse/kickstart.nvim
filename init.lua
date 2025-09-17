@@ -882,12 +882,12 @@ require('lazy').setup({
                     -- statusline will be shown only if 'laststatus' == 3
                     laststatus = 1, -- turn off the statusline in zen mode
                 },
-                twilight = { enabled = true }, -- enable to start Twilight when zen mode opens
+                twilight = { enabled = false }, -- enable to start Twilight when zen mode opens
                 tmux = { enabled = true }, -- disables the tmux statusline
             },
         },
     },
-    { "Mofiqul/dracula.nvim", lazy = false, priority = 1000 },
+    { "pappasam/papercolor-theme-slim", lazy = false, priority = 1000 },
     require('kickstart.plugins.autopairs'),
     require('kickstart.plugins.gitsigns'),
 }, {
@@ -915,7 +915,7 @@ require('lazy').setup({
 
 -- Set colorscheme
 vim.opt.termguicolors = true
-vim.cmd.colorscheme 'dracula'
+vim.cmd.colorscheme 'PaperColorSlimLight'
 
 -- No swap/backup files
 vim.opt.swapfile = false
