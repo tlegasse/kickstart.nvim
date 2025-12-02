@@ -198,6 +198,9 @@ vim.keymap.set('n', '<leader>dd', vim.diagnostic.open_float)
 vim.keymap.set('n', '<leader>rr', ':%s:::g<Left><Left><Left>')
 vim.keymap.set('v', '<leader>rr', ':s:::g<Left><Left><Left>')
 
+vim.keymap.set('n', '<leader>jq', '<cmd>%!jq .<CR>')
+vim.keymap.set('v', '<leader>jq', "<cmd>'<,'>!jq .<CR>")
+
 vim.keymap.set('n', '<leader>i', [["_ciw<C-r>+<Esc>]])
 
 -- Visual mode speedy stuff
@@ -239,11 +242,16 @@ vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left wind
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
-vim.keymap.set({'n','v'}, '<leader><leader>', '<CMD>Telescope buffers<CR>')
+vim.keymap.set({'n','v'}, '<leader><leader>', ':')
 
 vim.keymap.set("n", "<leader>p", "<CMD>Telescope yank_history<CR>")
 
 vim.keymap.set('n', '<leader>oo', '<cmd>e ~/orgfiles/__index.org<CR>')
+
+vim.api.nvim_create_autocmd({"BufEnter", "BufWinEnter"}, {
+    pattern = {"COMMIT_EDITMSG"},
+    command = "startinsert",
+})
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -279,7 +287,7 @@ require('lazy').setup({
         keys = {
             { '<leader>ga', ':G add .<CR>', desc = 'Git add all' },
             { '<leader>gs', '<cmd>Git<CR>', desc = 'Git status' },
-            { '<leader>gc', ":G commit -m '", desc = 'Git commit' },
+            { '<leader>gc', ":G commit<CR>i", desc = 'Git commit' },
             { '<leader>go', ':GBrowse<CR>', desc = 'Git browse' },
             { '<leader>gb', ':G checkout ', desc = 'Git checkout' },
             { '<leader>gu', ':G push<CR>', desc = 'Git push' },
@@ -462,6 +470,7 @@ require('lazy').setup({
             vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
             vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
             vim.keymap.set('n', '<leader>sf', builtin.find_files, { desc = '[S]earch [F]iles' })
+            vim.keymap.set('n', '<leader>sb', builtin.buffers, { desc = '[S]earch [B]buffers' })
             vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
             vim.keymap.set('n', '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
             vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
@@ -470,7 +479,7 @@ require('lazy').setup({
             vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
 
             -- Slightly advanced example of overriding default behavior and theme
-            vim.keymap.set('n', '<leader>/', function()
+            vim.keymap.set('n', '<leader>f', function()
                 -- You can pass additional configuration to Telescope to change the theme, layout, etc.
                 builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
                     winblend = 10,
@@ -730,6 +739,9 @@ require('lazy').setup({
         end,
     },
     {
+        'dhruvasagar/vim-table-mode'
+    },
+    {
         'chipsenkbeil/org-roam.nvim',
         tag = '0.1.1',
         ft = { 'org' }, -- Only load for org files
@@ -890,6 +902,11 @@ require('lazy').setup({
     { "pappasam/papercolor-theme-slim", lazy = false, priority = 1000 },
     require('kickstart.plugins.autopairs'),
     require('kickstart.plugins.gitsigns'),
+    {"xiyaowong/transparent.nvim", config = function (self, opts)
+        require("transparent").setup({
+        exclude_groups = { 'StatusLine', 'StatusLineNC' },
+        })
+    end}
 }, {
     ui = {
         -- If you are using a Nerd Font: set icons to an empty table which will use the
