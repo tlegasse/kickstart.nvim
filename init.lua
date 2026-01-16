@@ -531,7 +531,11 @@ require('lazy').setup({
         dependencies = { 'echasnovski/mini.icons' },
     },
     {
-        'williamboman/mason.nvim',
+        "mfussenegger/nvim-dap",
+        "jay-babu/mason-nvim-dap.nvim",
+    },
+    {
+        "williamboman/mason.nvim",
         cmd = 'Mason',
         config = function()
             require('mason').setup {
@@ -542,6 +546,26 @@ require('lazy').setup({
                         package_uninstalled = '✗',
                     },
                 },
+            }
+            require("mason-nvim-dap").setup {
+                ensure_installed = { "python" },
+                automatic_installation = true,
+                handlers = {
+                    function(config)
+                        require('mason-nvim-dap').default_setup(config)
+                    end,
+                    python = function(config)
+                        config.adapters = {
+                            type = "executable",
+                            command = "/usr/bin/python3",
+                            args = {
+                                "-m",
+                                "debugpy.adapter",
+                            },
+                        }
+                        require('mason-nvim-dap').default_setup(config)
+                    end,
+                }
             }
         end,
     },
@@ -617,12 +641,6 @@ require('lazy').setup({
             end
 
             require('mason-lspconfig').setup {
-                ensure_installed = {
-                    'lua_ls', 'pyright', 'html', 'cssls', 'bashls',
-                    'ts_ls', 'eslint', 'jsonls', 'yamlls', 'marksman',
-                    'rust_analyzer', 'gopls', 'clangd', 'dockerls',
-                    'tailwindcss', 'emmet_ls', 'prismals', 'sqlls'
-                },
                 automatic_installation = true,
                 handlers = {
                     function(server_name)
@@ -873,6 +891,9 @@ require('lazy').setup({
         }
     },
     {
+        'dhruvasagar/vim-table-mode'
+    },
+    {
         "folke/zen-mode.nvim",
         opts = {
             window = {
@@ -899,14 +920,24 @@ require('lazy').setup({
             },
         },
     },
-    { "pappasam/papercolor-theme-slim", lazy = false, priority = 1000 },
+    {
+        "altercation/vim-colors-solarized"
+    },
     require('kickstart.plugins.autopairs'),
     require('kickstart.plugins.gitsigns'),
     {"xiyaowong/transparent.nvim", config = function (self, opts)
         require("transparent").setup({
         exclude_groups = { 'StatusLine', 'StatusLineNC' },
         })
-    end}
+    end
+    },
+    {
+        "NachoNievaG/atac.nvim",
+        dependencies = { "akinsho/toggleterm.nvim" },
+        config = function()
+            require("atac").setup({})
+        end,
+    },
 }, {
     ui = {
         -- If you are using a Nerd Font: set icons to an empty table which will use the
@@ -932,12 +963,14 @@ require('lazy').setup({
 
 -- Set colorscheme
 vim.opt.termguicolors = true
-vim.cmd.colorscheme 'PaperColorSlimLight'
+vim.cmd.colorscheme 'shine'
+vim.opt.background = 'light'
+vim.cmd('hi Normal guibg=NONE ctermbg=NONE')
 
 -- No swap/backup files
 vim.opt.swapfile = false
 vim.opt.backup = false
 vim.opt.writebackup = false
 
-vim.opt.conceallevel = 2
+vim.opt.conceallevel = 0
 vim.opt.concealcursor = 'nc'
