@@ -1,4 +1,4 @@
---
+-- require("config.lazy")
 --[[
 
 =====================================================================
@@ -963,7 +963,7 @@ require('lazy').setup({
 
 -- Set colorscheme
 vim.opt.termguicolors = true
-vim.cmd.colorscheme 'shine'
+vim.cmd.colorscheme 'solarized'
 vim.opt.background = 'light'
 vim.cmd('hi Normal guibg=NONE ctermbg=NONE')
 
